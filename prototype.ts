@@ -23,7 +23,7 @@ const margin = baseline * percentage;
 const warning_timeframe = 0; //Timeframe to get previous warnings to determine blocks
 const warning_threshold = 3;
 
-var wikiRevId = ;
+var wikiRevId = 967845615;
 
 async function setUpDecisionLog() {
     //Placeholder
@@ -59,6 +59,7 @@ async function getUserAndTitle(revID){
 }
 
 async function findEditHistoryAuthor(edit_params){
+    var title = edit_params[0];
     var author = edit_params[1];
     var timestamp = edit_params[2];
     var this_url = url;
@@ -69,6 +70,7 @@ async function findEditHistoryAuthor(edit_params){
         arvuser: author,
         arvstart: timestamp,
         arvlimit: window_size,
+        arvprop: "oresscores",
     }
     Object.keys(params).forEach(function(key){this_url += "&" + key + "=" + params[key];});
     var next_promise = fetch(this_url).then(function (response){return response.json();}).then(
@@ -81,7 +83,7 @@ async function findEditHistoryAuthor(edit_params){
             return edits_list;
         })
     var result_edit_list = await next_promise;
-    return [author, result_edit_list];
+    return [title, author, result_edit_list];
 }
 
 async function displayWarningChoice() {
@@ -115,21 +117,22 @@ function writeNewDecision(user_id, title, type, timestamp, recipient_id, start_w
     return;
 }
 
-async function getScoreAndProcess(author_and_edits_list){
-    //Placeholder. Replace this with real code to retrieve ORES scores later.
+async function getScoreAndProcess(props_and_edits_list){
+    var title = props_and_edits_list[0];
+    var author = props_and_edits_list[1];
+    var edits_list = props_and_edits_list[2];
+
     var scores = new Array(window_size);
     for (var i = 0; i < scores.length; i++) {
-        scores[i] = 0.8;
+        //Only take ORES_DAMAGING score 
+        scores[i] = edits_list[i].oresscores.damaging.true;
     }
 
-    var author = author_and_edits_list[0];
-    var edits_list = author_and_edits_list[1];
     var window_start = edits_list[window_size-1].timestamp;
     var window_end = edits_list[0].timestamp;
     var avg = scores.reduce((acc, e) => acc + e, 0) / scores.length;
     var diff = avg - baseline;
-    //Not yet handled
-    var title = "";
+    
     if(diff > margin) {
         var warnings = getPreviousWarnings(author, window_end);
         var decision;
@@ -152,6 +155,13 @@ async function getScoreAndProcess(author_and_edits_list){
         }
         writeNewDecision(author, title, type, window_end, recipient, window_start, avg);
     }
+
+    //Display on prototype.html
+    var result_string = "";
+    result_string += "Title: " + title + " Author: " + author + "\n";
+    result_string += "Avg Score is: " + avg + " Difference from baseline is: " + diff + "\n";
+    result_string += "Starting time of window is: " + window_start + "Ending time of window is: " + window_end + "\n";
+    document.body.textContent = result_string;
 }
 
 function main() {
@@ -161,4 +171,5 @@ function main() {
     getScoreAndProcess(author_and_history);
 }
 
+main();
 
