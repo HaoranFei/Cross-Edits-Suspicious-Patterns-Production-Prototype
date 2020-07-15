@@ -14,7 +14,6 @@
   limitations under the License.
 **/
 
-
 const url = "https://en.wikipedia.org/w/api.php?origin=*";
 const window_size:number = 10;
 const baseline = 0.3;
@@ -23,7 +22,13 @@ const margin = baseline * percentage;
 const warning_timeframe = 0; //Timeframe to get previous warnings to determine blocks
 const warning_threshold = 3;
 
-var wikiRevId = 967845615;
+
+var sample_edit_params = {
+    title: "Donald Trump",
+    author: "Chaheel Riens",
+    wikiRevId: 967788714,
+    timestamp: "2020-07-15T09:22:15Z",
+};
 
 async function setUpDecisionLog() {
     //Placeholder
@@ -35,17 +40,21 @@ async function setUpDecisionLog() {
 /*
   Queries the MediaWiki API to get the article title and author ID from revision ID.
 */
+/*
 async function getUserAndTitle(revID){
     var this_url = url;
     var params = {
         action: "query",
         format: "json",
         prop: "revisions",
+        rvslots: "main",
+        formatversion: "2",
         rvprop: "timestamp|user|comment|content",
         rvstartid: revID,
         rvendid: revID,
     }
     Object.keys(params).forEach(function(key){this_url += "&" + key + "=" + params[key];});
+    console.log(this_url);
     var promise = fetch(this_url).then(function (response){return response.json();}).then(
         function(response) {
             var page = response.query.pages[0];
@@ -57,11 +66,16 @@ async function getUserAndTitle(revID){
     var result_list = await promise;
     return result_list;
 }
+*/
 
 async function findEditHistoryAuthor(edit_params){
-    var title = edit_params[0];
-    var author = edit_params[1];
-    var timestamp = edit_params[2];
+    var title = edit_params.title;
+    var author = edit_params.author;
+    var timestamp = edit_params.timestamp;
+    //console.log("Title is: " + title);
+    //console.log("Author is: " + author);
+    //console.log("Timestamp is: " + timestamp);
+
     var this_url = url;
     var params = {
         action: "query",
@@ -70,20 +84,30 @@ async function findEditHistoryAuthor(edit_params){
         arvuser: author,
         arvstart: timestamp,
         arvlimit: window_size,
-        arvprop: "oresscores",
+        arvprop: "oresscores|timestamp",
     }
     Object.keys(params).forEach(function(key){this_url += "&" + key + "=" + params[key];});
-    var next_promise = fetch(this_url).then(function (response){return response.json();}).then(
-        function(response) {
-            var edits_by_article = response.query.allrevisions;
-            var edits_list = [];
-            for (var page in edits_by_article) {
-                edits_list.concat(edits_by_article[page].revisions);
-            }
-            return edits_list;
-        })
-    var result_edit_list = await next_promise;
-    return [title, author, result_edit_list];
+    //console.log(this_url);
+    var response = await fetch(this_url);
+    var response_json = await response.json();
+    //console.log("Now Displaying the JSON response")
+    //console.log(response_json);
+    var edits_by_article = response_json.query.allrevisions;
+    //console.log("Now displaying the edits")
+    //console.log(edits_by_article);
+    var edits_list = [];
+    for (var page in edits_by_article) {
+        edits_list.push(edits_by_article[page].revisions[0]);
+    }
+    //console.log("Now displaying the extracted edit list");
+    //console.log(edits_list);
+ 
+    var results = {
+        title: title,
+        author: author,
+        edits_list: edits_list,
+    }
+    return results;
 }
 
 async function displayWarningChoice() {
@@ -117,12 +141,15 @@ function writeNewDecision(user_id, title, type, timestamp, recipient_id, start_w
     return;
 }
 
-async function getScoreAndProcess(props_and_edits_list){
-    var title = props_and_edits_list[0];
-    var author = props_and_edits_list[1];
-    var edits_list = props_and_edits_list[2];
+async function getScoreAndProcess(props_and_edits_list_promise){
+    var props_and_edits_list = await props_and_edits_list_promise;
+    var title = props_and_edits_list.title;
+    var author = props_and_edits_list.author;
+    var edits_list = props_and_edits_list.edits_list;
+    //console.log("Retrieved Edits List is: ");
+    //console.log(edits_list);
 
-    var scores = new Array(window_size);
+    var scores = new Array(Math.max(window_size, edits_list.length));
     for (var i = 0; i < scores.length; i++) {
         //Only take ORES_DAMAGING score 
         scores[i] = edits_list[i].oresscores.damaging.true;
@@ -154,21 +181,26 @@ async function getScoreAndProcess(props_and_edits_list){
             }
         }
         writeNewDecision(author, title, type, window_end, recipient, window_start, avg);
+    }else{
+        console.log("Author " + author + "is not engaged in suspicious behavior.");
     }
 
     //Display on prototype.html
     var result_string = "";
     result_string += "Title: " + title + " Author: " + author + "\n";
     result_string += "Avg Score is: " + avg + " Difference from baseline is: " + diff + "\n";
-    result_string += "Starting time of window is: " + window_start + "Ending time of window is: " + window_end + "\n";
-    document.body.textContent = result_string;
+    result_string += "Starting time of window is: " + window_start +"\n"; 
+    result_string += "Ending time of window is: " + window_end + "\n";
+    console.log(result_string);
+    //document.body.textContent = result_string;
 }
 
 function main() {
     setUpDecisionLog();
-    var author_and_title = getUserAndTitle(wikiRevId);
-    var author_and_history = findEditHistoryAuthor(author_and_title);
-    getScoreAndProcess(author_and_history);
+    //console.log("First Step Finished");
+    var params_and_history = findEditHistoryAuthor(sample_edit_params);
+    //console.log("Second Step Finished");
+    getScoreAndProcess(params_and_history);
 }
 
 main();
