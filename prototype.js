@@ -58,12 +58,15 @@ var percentage = 0.5;
 var margin = baseline * percentage;
 var warning_timeframe = 0; //Timeframe to get previous warnings to determine blocks
 var warning_threshold = 3;
+/*
 var sample_edit_params = {
     title: "Donald Trump",
     author: "Chaheel Riens",
     wikiRevId: 967788714,
-    timestamp: "2020-07-15T09:22:15Z"
+    timestamp: "2020-07-15T09:22:15Z",
 };
+*/
+var sample_revID = 967788714;
 function setUpDecisionLog() {
     return __awaiter(this, void 0, void 0, function () {
         var db;
@@ -76,39 +79,51 @@ function setUpDecisionLog() {
 /*
   Queries the MediaWiki API to get the article title and author ID from revision ID.
 */
-/*
-async function getUserAndTitle(revID){
-    var this_url = url;
-    var params = {
-        action: "query",
-        format: "json",
-        prop: "revisions",
-        rvslots: "main",
-        formatversion: "2",
-        rvprop: "timestamp|user|comment|content",
-        rvstartid: revID,
-        rvendid: revID,
-    }
-    Object.keys(params).forEach(function(key){this_url += "&" + key + "=" + params[key];});
-    console.log(this_url);
-    var promise = fetch(this_url).then(function (response){return response.json();}).then(
-        function(response) {
-            var page = response.query.pages[0];
-            var title = page.title;
-            var author = page.revisions[0].user;
-            var timestamp = page.revisions[0].timestamp;
-            return [title, author, timestamp];
-        })
-    var result_list = await promise;
-    return result_list;
-}
-*/
-function findEditHistoryAuthor(edit_params) {
+function getUserAndTitle(revID) {
     return __awaiter(this, void 0, void 0, function () {
-        var title, author, timestamp, this_url, params, response, response_json, edits_by_article, edits_list, page, results;
+        var this_url, params, response, response_json, pages_object, v, page_object, title, author, timestamp, results;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
+                    this_url = url;
+                    params = {
+                        action: "query",
+                        format: "json",
+                        prop: "info|revisions",
+                        revids: revID
+                    };
+                    Object.keys(params).forEach(function (key) { this_url += "&" + key + "=" + params[key]; });
+                    return [4 /*yield*/, fetch(this_url)];
+                case 1:
+                    response = _a.sent();
+                    return [4 /*yield*/, response.json()];
+                case 2:
+                    response_json = _a.sent();
+                    pages_object = response_json.query.pages;
+                    for (v in pages_object) {
+                        page_object = pages_object[v];
+                    }
+                    title = page_object.title;
+                    author = page_object.revisions[0].user;
+                    timestamp = page_object.revisions[0].timestamp;
+                    results = {
+                        title: title,
+                        author: author,
+                        timestamp: timestamp
+                    };
+                    return [2 /*return*/, results];
+            }
+        });
+    });
+}
+function findEditHistoryAuthor(edit_params_promise) {
+    return __awaiter(this, void 0, void 0, function () {
+        var edit_params, title, author, timestamp, this_url, params, response, response_json, edits_by_article, edits_list, page, results;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0: return [4 /*yield*/, edit_params_promise];
+                case 1:
+                    edit_params = _a.sent();
                     title = edit_params.title;
                     author = edit_params.author;
                     timestamp = edit_params.timestamp;
@@ -124,10 +139,10 @@ function findEditHistoryAuthor(edit_params) {
                     };
                     Object.keys(params).forEach(function (key) { this_url += "&" + key + "=" + params[key]; });
                     return [4 /*yield*/, fetch(this_url)];
-                case 1:
+                case 2:
                     response = _a.sent();
                     return [4 /*yield*/, response.json()];
-                case 2:
+                case 3:
                     response_json = _a.sent();
                     edits_by_article = response_json.query.allrevisions;
                     edits_list = [];
@@ -238,7 +253,8 @@ function getScoreAndProcess(props_and_edits_list_promise) {
                     result_string = "";
                     result_string += "Title: " + title + " Author: " + author + "\n";
                     result_string += "Avg Score is: " + avg + " Difference from baseline is: " + diff + "\n";
-                    result_string += "Starting time of window is: " + window_start + "Ending time of window is: " + window_end + "\n";
+                    result_string += "Starting time of window is: " + window_start + "\n";
+                    result_string += "Ending time of window is: " + window_end + "\n";
                     console.log(result_string);
                     return [2 /*return*/];
             }
@@ -248,6 +264,7 @@ function getScoreAndProcess(props_and_edits_list_promise) {
 function main() {
     setUpDecisionLog();
     //console.log("First Step Finished");
+    var sample_edit_params = getUserAndTitle(sample_revID);
     var params_and_history = findEditHistoryAuthor(sample_edit_params);
     //console.log("Second Step Finished");
     getScoreAndProcess(params_and_history);

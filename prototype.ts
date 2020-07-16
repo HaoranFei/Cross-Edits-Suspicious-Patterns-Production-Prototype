@@ -22,13 +22,16 @@ const margin = baseline * percentage;
 const warning_timeframe = 0; //Timeframe to get previous warnings to determine blocks
 const warning_threshold = 3;
 
-
+/*
 var sample_edit_params = {
     title: "Donald Trump",
     author: "Chaheel Riens",
     wikiRevId: 967788714,
     timestamp: "2020-07-15T09:22:15Z",
 };
+*/
+
+var sample_revID = 967788714;
 
 async function setUpDecisionLog() {
     //Placeholder
@@ -40,35 +43,38 @@ async function setUpDecisionLog() {
 /*
   Queries the MediaWiki API to get the article title and author ID from revision ID.
 */
-/*
+
 async function getUserAndTitle(revID){
     var this_url = url;
     var params = {
         action: "query",
         format: "json",
-        prop: "revisions",
-        rvslots: "main",
-        formatversion: "2",
-        rvprop: "timestamp|user|comment|content",
-        rvstartid: revID,
-        rvendid: revID,
+        prop: "info|revisions",
+ 		revids: revID,
     }
     Object.keys(params).forEach(function(key){this_url += "&" + key + "=" + params[key];});
-    console.log(this_url);
-    var promise = fetch(this_url).then(function (response){return response.json();}).then(
-        function(response) {
-            var page = response.query.pages[0];
-            var title = page.title;
-            var author = page.revisions[0].user;
-            var timestamp = page.revisions[0].timestamp;
-            return [title, author, timestamp];
-        })
-    var result_list = await promise;
-    return result_list;
-}
-*/
+    var response = await fetch(this_url);
+    var response_json = await response.json();
+    
+    var pages_object = response_json.query.pages;
+    for (var v in pages_object) {
+    	var page_object = pages_object[v];
+    }
 
-async function findEditHistoryAuthor(edit_params){
+    var title = page_object.title;
+    var author = page_object.revisions[0].user;
+    var timestamp = page_object.revisions[0].timestamp;
+    var results = {
+    	title: title,
+    	author: author,
+    	timestamp: timestamp,
+    }
+    return results;
+}
+
+
+async function findEditHistoryAuthor(edit_params_promise){
+	var edit_params = await edit_params_promise;
     var title = edit_params.title;
     var author = edit_params.author;
     var timestamp = edit_params.timestamp;
@@ -198,6 +204,7 @@ async function getScoreAndProcess(props_and_edits_list_promise){
 function main() {
     setUpDecisionLog();
     //console.log("First Step Finished");
+    var sample_edit_params = getUserAndTitle(sample_revID);
     var params_and_history = findEditHistoryAuthor(sample_edit_params);
     //console.log("Second Step Finished");
     getScoreAndProcess(params_and_history);
