@@ -56,7 +56,7 @@ var window_size = 10;
 var baseline = 0.3;
 var percentage = 0.5;
 var margin = baseline * percentage;
-var warning_timeframe = 0; //Timeframe to get previous warnings to determine blocks
+var warning_timeframe = 3; //Timeframe to get previous warnings to determine blocks, in days
 var warning_threshold = 3;
 /*
 var sample_edit_params = {
@@ -67,12 +67,13 @@ var sample_edit_params = {
 };
 */
 var sample_revID = 967788714;
+var db;
 function setUpDecisionLog() {
     return __awaiter(this, void 0, void 0, function () {
-        var db;
         return __generator(this, function (_a) {
-            db = undefined;
-            return [2 /*return*/, db];
+            //Simulating a real database in demo 
+            db = {};
+            return [2 /*return*/];
         });
     });
 }
@@ -197,11 +198,36 @@ function getRecipientForBlock() {
     });
 }
 function getPreviousWarnings(user_id, end_timestamp) {
-    //Not yet implemented
-    return [];
+    if (!(user_id in db)) {
+        return [];
+    }
+    else {
+        var edits_by_user = db[user_id];
+        var edits_before_end = edits_by_user.filter(function (edit) {
+            var warning_period_start = new Date(end_timestamp);
+            warning_period_start.setDate(warning_period_start.getDate() - warning_timeframe);
+            var warning_period_end = new Date(end_timestamp);
+            var this_edit_time = new Date(edit.timestamp);
+            return (this_edit_time > warning_period_start && this_edit_time < warning_period_end);
+        });
+        return edits_before_end;
+    }
 }
 function writeNewDecision(user_id, title, type, timestamp, recipient_id, start_window, avg_score) {
-    return;
+    var decision_object = {
+        user_id: user_id,
+        title: title,
+        timestamp: timestamp,
+        recipient_id: recipient_id,
+        start_window: start_window,
+        avg_score: avg_score
+    };
+    if (!(user_id in db)) {
+        db[user_id] = [decision_object];
+    }
+    else {
+        db[user_id].push(decision_object);
+    }
 }
 function getScoreAndProcess(props_and_edits_list_promise) {
     return __awaiter(this, void 0, void 0, function () {

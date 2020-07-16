@@ -19,7 +19,7 @@ const window_size:number = 10;
 const baseline = 0.3;
 const percentage = 0.5
 const margin = baseline * percentage;
-const warning_timeframe = 0; //Timeframe to get previous warnings to determine blocks
+const warning_timeframe = 3; //Timeframe to get previous warnings to determine blocks, in days
 const warning_threshold = 3;
 
 /*
@@ -32,11 +32,11 @@ var sample_edit_params = {
 */
 
 var sample_revID = 967788714;
+var db;
 
 async function setUpDecisionLog() {
-    //Placeholder
-    var db = undefined;
-    return db;
+    //Simulating a real database in demo 
+    db = {};
 }
 
 
@@ -139,12 +139,36 @@ async function getRecipientForBlock(){
 }
 
 function getPreviousWarnings(user_id, end_timestamp) {
-    //Not yet implemented
-    return [];
+    
+    if(!(user_id in db)) {
+    	return [];
+    }else{
+    	var edits_by_user = db[user_id];
+    	var edits_before_end = edits_by_user.filter(function(edit){
+    		var warning_period_start = new Date(end_timestamp);
+    		warning_period_start.setDate(warning_period_start.getDate() - warning_timeframe);
+    		var warning_period_end = new Date(end_timestamp);
+    		var this_edit_time = new Date(edit.timestamp);
+    		return (this_edit_time > warning_period_start && this_edit_time < warning_period_end); 
+    	});
+    	return edits_before_end;
+    }
 }
 
 function writeNewDecision(user_id, title, type, timestamp, recipient_id, start_window, avg_score) {
-    return;
+	var decision_object = {
+		user_id: user_id,
+		title: title,
+		timestamp: timestamp,
+		recipient_id: recipient_id,
+		start_window: start_window,
+		avg_score: avg_score,
+	}
+    if(!(user_id in db)) {
+    	db[user_id] = [decision_object];
+    }else {
+    	db[user_id].push(decision_object);
+    }
 }
 
 async function getScoreAndProcess(props_and_edits_list_promise){
