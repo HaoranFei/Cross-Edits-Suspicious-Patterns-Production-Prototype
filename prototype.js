@@ -14,7 +14,6 @@
   limitations under the License.
 **/
 const fetch = require('node-fetch');
-
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -58,16 +57,16 @@ var percentage = 0.5;
 var margin = baseline * percentage;
 var warning_timeframe = 3; //Timeframe to get previous warnings to determine blocks, in days
 var warning_threshold = 3;
-/*
-var sample_edit_params = {
-    title: "Donald Trump",
-    author: "Chaheel Riens",
-    wikiRevId: 967788714,
-    timestamp: "2020-07-15T09:22:15Z",
-};
-*/
-var sample_revID = 967788714;
+//This testing set of revisions are all made by Chaheel Riens on page Donald Trump
+var sample_revID_list = [967788714, 845591562, 820220399, 797070597, 784455460, 761250919, 760592760, 760592487, 738223561, 694525673];
 var db;
+function sleep() {
+    return __awaiter(this, void 0, void 0, function () {
+        return __generator(this, function (_a) {
+            return [2 /*return*/, new Promise(function (resolve) { return setTimeout(resolve, 3000); })];
+        });
+    });
+}
 function setUpDecisionLog() {
     return __awaiter(this, void 0, void 0, function () {
         return __generator(this, function (_a) {
@@ -231,7 +230,7 @@ function writeNewDecision(user_id, title, type, timestamp, recipient_id, start_w
 }
 function getScoreAndProcess(props_and_edits_list_promise) {
     return __awaiter(this, void 0, void 0, function () {
-        var props_and_edits_list, title, author, edits_list, scores, i, window_start, window_end, avg, diff, warnings, decision, type, recipient, result_string;
+        var props_and_edits_list, title, author, edits_list, scores, i, missing_score_string, window_start, window_end, avg, diff, warnings, decision, type, recipient, result_string;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0: return [4 /*yield*/, props_and_edits_list_promise];
@@ -243,6 +242,15 @@ function getScoreAndProcess(props_and_edits_list_promise) {
                     scores = new Array(Math.max(window_size, edits_list.length));
                     for (i = 0; i < scores.length; i++) {
                         //Only take ORES_DAMAGING score 
+                        //If ORES Scores are missing, skip this edit entirely. 
+                        if (edits_list[i].oresscores.damaging == undefined) {
+                            missing_score_string = "";
+                            missing_score_string += "Title: " + title + " Author: " + author + "\n";
+                            missing_score_string += "ORES Scores are missing. Hence no detection is performed. \n";
+                            missing_score_string += "Timestamp: " + edits_list[0].timestamp + "\n";
+                            console.log(missing_score_string);
+                            return [2 /*return*/];
+                        }
                         scores[i] = edits_list[i].oresscores.damaging["true"];
                     }
                     window_start = edits_list[window_size - 1].timestamp;
@@ -278,7 +286,8 @@ function getScoreAndProcess(props_and_edits_list_promise) {
                 case 7:
                     result_string = "";
                     result_string += "Title: " + title + " Author: " + author + "\n";
-                    result_string += "Avg Score is: " + avg + " Difference from baseline is: " + diff + "\n";
+                    result_string += "Avg ORES Damaging score is: " + avg.toFixed(2) + "\n";
+                    result_string += "Difference from baseline score is: " + diff.toFixed(2) + "\n";
                     result_string += "Starting time of window is: " + window_start + "\n";
                     result_string += "Ending time of window is: " + window_end + "\n";
                     console.log(result_string);
@@ -287,12 +296,42 @@ function getScoreAndProcess(props_and_edits_list_promise) {
         });
     });
 }
+function run_revision(revID) {
+    return __awaiter(this, void 0, void 0, function () {
+        var sample_edit_params, params_and_history;
+        return __generator(this, function (_a) {
+            sample_edit_params = getUserAndTitle(revID);
+            params_and_history = findEditHistoryAuthor(sample_edit_params);
+            getScoreAndProcess(params_and_history);
+            console.log("Executed test for revision ID: " + revID);
+            return [2 /*return*/];
+        });
+    });
+}
 function main() {
-    setUpDecisionLog();
-    //console.log("First Step Finished");
-    var sample_edit_params = getUserAndTitle(sample_revID);
-    var params_and_history = findEditHistoryAuthor(sample_edit_params);
-    //console.log("Second Step Finished");
-    getScoreAndProcess(params_and_history);
+    return __awaiter(this, void 0, void 0, function () {
+        var i;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0:
+                    setUpDecisionLog();
+                    i = 0;
+                    _a.label = 1;
+                case 1:
+                    if (!(i < sample_revID_list.length)) return [3 /*break*/, 5];
+                    return [4 /*yield*/, run_revision(sample_revID_list[i])];
+                case 2:
+                    _a.sent();
+                    return [4 /*yield*/, sleep()];
+                case 3:
+                    _a.sent();
+                    _a.label = 4;
+                case 4:
+                    i++;
+                    return [3 /*break*/, 1];
+                case 5: return [2 /*return*/];
+            }
+        });
+    });
 }
 main();

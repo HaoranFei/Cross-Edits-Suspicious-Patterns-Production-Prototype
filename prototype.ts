@@ -22,17 +22,13 @@ const margin = baseline * percentage;
 const warning_timeframe = 3; //Timeframe to get previous warnings to determine blocks, in days
 const warning_threshold = 3;
 
-/*
-var sample_edit_params = {
-    title: "Donald Trump",
-    author: "Chaheel Riens",
-    wikiRevId: 967788714,
-    timestamp: "2020-07-15T09:22:15Z",
-};
-*/
-
-var sample_revID = 967788714;
+//This testing set of revisions are all made by Chaheel Riens on page Donald Trump
+var sample_revID_list = [967788714, 845591562, 820220399, 797070597, 784455460, 761250919, 760592760, 760592487, 738223561, 694525673];
 var db;
+
+async function sleep() {
+  return new Promise(resolve => setTimeout(resolve, 3000));
+}
 
 async function setUpDecisionLog() {
     //Simulating a real database in demo 
@@ -57,6 +53,7 @@ async function getUserAndTitle(revID){
     var response_json = await response.json();
     
     var pages_object = response_json.query.pages;
+
     for (var v in pages_object) {
     	var page_object = pages_object[v];
     }
@@ -95,6 +92,7 @@ async function findEditHistoryAuthor(edit_params_promise){
     Object.keys(params).forEach(function(key){this_url += "&" + key + "=" + params[key];});
     //console.log(this_url);
     var response = await fetch(this_url);
+    //console.log(response);
     var response_json = await response.json();
     //console.log("Now Displaying the JSON response")
     //console.log(response_json);
@@ -182,6 +180,15 @@ async function getScoreAndProcess(props_and_edits_list_promise){
     var scores = new Array(Math.max(window_size, edits_list.length));
     for (var i = 0; i < scores.length; i++) {
         //Only take ORES_DAMAGING score 
+        //If ORES Scores are missing, skip this edit entirely. 
+        if(edits_list[i].oresscores.damaging == undefined) {
+        	var missing_score_string = "";
+        	missing_score_string += "Title: " + title + " Author: " + author + "\n";
+        	missing_score_string += "ORES Scores are missing. Hence no detection is performed. \n";
+        	missing_score_string += "Timestamp: " + edits_list[0].timestamp + "\n";
+        	console.log(missing_score_string);
+        	return;
+        }
         scores[i] = edits_list[i].oresscores.damaging.true;
     }
 
@@ -218,20 +225,28 @@ async function getScoreAndProcess(props_and_edits_list_promise){
     //Display on prototype.html
     var result_string = "";
     result_string += "Title: " + title + " Author: " + author + "\n";
-    result_string += "Avg Score is: " + avg + " Difference from baseline is: " + diff + "\n";
+    result_string += "Avg ORES Damaging score is: " + avg.toFixed(2) + "\n";
+    result_string += "Difference from baseline score is: " + diff.toFixed(2) + "\n";
     result_string += "Starting time of window is: " + window_start +"\n"; 
     result_string += "Ending time of window is: " + window_end + "\n";
     console.log(result_string);
     //document.body.textContent = result_string;
 }
 
-function main() {
-    setUpDecisionLog();
-    //console.log("First Step Finished");
-    var sample_edit_params = getUserAndTitle(sample_revID);
+async function run_revision(revID) {
+    var sample_edit_params = getUserAndTitle(revID);
     var params_and_history = findEditHistoryAuthor(sample_edit_params);
-    //console.log("Second Step Finished");
     getScoreAndProcess(params_and_history);
+    console.log("Executed test for revision ID: " + revID);
+}
+
+async function main() {
+    setUpDecisionLog();
+    //for(var i = 0; i < sample_revID_list.length; i++){
+    for(var i = 0; i < sample_revID_list.length; i++){
+    	await run_revision(sample_revID_list[i]);
+    	await sleep();
+    }
 }
 
 main();
