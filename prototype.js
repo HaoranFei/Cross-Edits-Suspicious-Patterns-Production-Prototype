@@ -177,7 +177,7 @@ var CESP_Test = /** @class */ (function () {
     CESP_Test.prototype.sendWarningMessage = function (recipient) {
         return __awaiter(this, void 0, void 0, function () {
             return __generator(this, function (_a) {
-                console.log("Warning message sent to " + recipient + "\n");
+                console.log("Warning message sent to " + recipient);
                 return [2 /*return*/];
             });
         });
@@ -185,7 +185,7 @@ var CESP_Test = /** @class */ (function () {
     CESP_Test.prototype.sendBlockMessage = function (recipient) {
         return __awaiter(this, void 0, void 0, function () {
             return __generator(this, function (_a) {
-                console.log("Block message sent to " + recipient + "\n");
+                console.log("Block message sent to " + recipient);
                 return [2 /*return*/];
             });
         });
@@ -203,14 +203,19 @@ var CESP_Test = /** @class */ (function () {
         }
         else {
             var events_by_user = this.db[user_id];
+            // Within body of anonymous function, the keyword "this" cannot reference the outside
+            // class. Hence using this.warning_timeframe directly inside anonymous function 
+            // will be undefined. 
+            var warning_timeframe = this.warning_timeframe;
             var events_before_end = events_by_user.filter(function (edit) {
                 var warning_period_start = new Date(end_timestamp);
-                warning_period_start.setDate(warning_period_start.getDate() - this.warning_timeframe);
+                warning_period_start.setDate(warning_period_start.getDate() - warning_timeframe);
                 var warning_period_end = new Date(end_timestamp);
                 var this_edit_time = new Date(edit.timestamp);
-                return (this_edit_time > warning_period_start && this_edit_time < warning_period_end);
+                // Reason to use <= and >=: enable easier testing of Decision Log and Messaging service
+                return (this_edit_time >= warning_period_start && this_edit_time <= warning_period_end);
             });
-            console.log("Get " + events_before_end.length + " past events for " + user_id + "\n");
+            console.log("Get " + events_before_end.length + " past events for " + user_id);
             return events_before_end;
         }
     };
@@ -229,7 +234,7 @@ var CESP_Test = /** @class */ (function () {
         else {
             this.db[user_id].push(decision_object);
         }
-        console.log("Suspicious event of type " + type + " logged for " + user_id + " at " + timestamp + "\n");
+        console.log("Suspicious event of type " + type + " logged for " + user_id + " at " + timestamp);
     };
     CESP_Test.prototype.getScoreAndProcess = function (props_and_edits_list_promise) {
         return __awaiter(this, void 0, void 0, function () {
@@ -335,7 +340,7 @@ var CESP_Test = /** @class */ (function () {
 }());
 function main() {
     return __awaiter(this, void 0, void 0, function () {
-        var test_case_one_info, test_case_one;
+        var test_case_one_info, test_case_one, test_case_two_info, test_case_two;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
@@ -353,6 +358,17 @@ function main() {
                     return [4 /*yield*/, test_case_one.run_all()];
                 case 1:
                     _a.sent();
+                    test_case_two_info = {
+                        url: "https://en.wikipedia.org/w/api.php?origin=*",
+                        window_size: 10,
+                        baseline: 0.0,
+                        percentage: 0.0,
+                        margin: 0.0,
+                        warning_timeframe: 3,
+                        warning_threshold: 3,
+                        revID_list: [967788714, 967788714, 967788714, 967788714, 967788714]
+                    };
+                    test_case_two = new CESP_Test(test_case_two_info);
                     return [2 /*return*/];
             }
         });

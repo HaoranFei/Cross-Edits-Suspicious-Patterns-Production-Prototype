@@ -113,21 +113,15 @@ class CESP_Test implements Revision_Test {
 	        arvprop: "oresscores|timestamp",
 	    }
 	    Object.keys(params).forEach(function(key){this_url += "&" + key + "=" + params[key];});
-	    //console.log(this_url);
 	    var response = await fetch(this_url);
-	    //console.log(response);
 	    var response_json = await response.json();
-	    //console.log("Now Displaying the JSON response")
-	    //console.log(response_json);
+
 	    var edits_by_article = response_json.query.allrevisions;
-	    //console.log("Now displaying the edits")
-	    //console.log(edits_by_article);
+
 	    var edits_list = [];
 	    for (var page in edits_by_article) {
 	        edits_list.push(edits_by_article[page].revisions[0]);
 	    }
-	    //console.log("Now displaying the extracted edit list");
-	    //console.log(edits_list);
 	    var results = {
 	        title: title,
 	        author: author,
@@ -150,12 +144,12 @@ class CESP_Test implements Revision_Test {
 	}
 
 	async sendWarningMessage(recipient){
-		console.log("Warning message sent to " + recipient + "\n");
+		console.log("Warning message sent to " + recipient);
     	return;
 	}
 
 	async sendBlockMessage(recipient){
-		console.log("Block message sent to " + recipient + "\n");
+		console.log("Block message sent to " + recipient);
     	return;
 	}
 
@@ -168,14 +162,19 @@ class CESP_Test implements Revision_Test {
 	    	return [];
 	    }else{
 	    	var events_by_user = this.db[user_id];
+    		// Within body of anonymous function, the keyword "this" cannot reference the outside
+    		// class. Hence using this.warning_timeframe directly inside anonymous function 
+    		// will be undefined. 
+    		var warning_timeframe = this.warning_timeframe;
 	    	var events_before_end = events_by_user.filter(function(edit){
 	    		var warning_period_start = new Date(end_timestamp);
-	    		warning_period_start.setDate(warning_period_start.getDate() - this.warning_timeframe);
+	    		warning_period_start.setDate(warning_period_start.getDate() - warning_timeframe);
 	    		var warning_period_end = new Date(end_timestamp);
 	    		var this_edit_time = new Date(edit.timestamp);
-	    		return (this_edit_time > warning_period_start && this_edit_time < warning_period_end); 
+	    		// Reason to use <= and >=: enable easier testing of Decision Log and Messaging service
+	    		return (this_edit_time >= warning_period_start && this_edit_time <= warning_period_end); 
 	    	});
-	    	console.log("Get " + events_before_end.length + " past events for " + user_id + "\n");
+	    	console.log("Get " + events_before_end.length + " past events for " + user_id);
 	    	return events_before_end;
 	    }
 	}
@@ -194,7 +193,7 @@ class CESP_Test implements Revision_Test {
 	    }else {
 	    	this.db[user_id].push(decision_object);
 	    }
-	    console.log("Suspicious event of type " + type + " logged for " + user_id + " at " + timestamp + "\n");
+	    console.log("Suspicious event of type " + type + " logged for " + user_id + " at " + timestamp);
 	}
 
 	async getScoreAndProcess(props_and_edits_list_promise){
@@ -276,6 +275,8 @@ class CESP_Test implements Revision_Test {
 }
 
 async function main() {
+	// Test Case One: 10 different edits, all by same author on same article
+	// However, most of these edits suffer from lack of ORES-scores. 
 	var test_case_one_info: CESP_Test_Info = {
 		url: "https://en.wikipedia.org/w/api.php?origin=*",
 		window_size: 10,
@@ -288,6 +289,21 @@ async function main() {
 	}
 	var test_case_one: CESP_Test = new CESP_Test(test_case_one_info);
 	await test_case_one.run_all();
+
+	// Test Case Two: repetition of same edit. Designed specifically to trigger first warning, then blocking decision. 
+	var test_case_two_info: CESP_Test_Info = {
+		url: "https://en.wikipedia.org/w/api.php?origin=*",
+		window_size: 10,
+		baseline: 0.0, //All revisions will be flagged!
+		percentage: 0.0,
+		margin: 0.0,
+		warning_timeframe: 3,
+		warning_threshold: 3,
+		revID_list: [967788714, 967788714, 967788714, 967788714, 967788714], //Last reptition should trigger block
+	}
+	var test_case_two: CESP_Test = new CESP_Test(test_case_two_info);
+	//await test_case_two.run_all();
+
 }
 
 main();

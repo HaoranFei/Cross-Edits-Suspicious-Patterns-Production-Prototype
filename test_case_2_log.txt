@@ -1,0 +1,63 @@
+Executed test for revision ID: 967788714
+Loaded metadata for revision ID: 967788714
+Retrieved past 10 edits for author Chaheel Riens
+Choice displayed to reviewer on whether to warn Chaheel Riens
+Warning message sent to Chaheel Riens
+Suspicious event of type warning logged for Chaheel Riens at 2020-07-15T09:22:15Z
+Title: Donald Trump Author: Chaheel Riens
+Avg ORES Damaging score is: 0.01
+Difference from baseline score is: 0.01
+Starting time of window is: 2020-07-14T14:11:55Z
+Ending time of window is: 2020-07-15T09:22:15Z
+
+Executed test for revision ID: 967788714
+Loaded metadata for revision ID: 967788714
+Retrieved past 10 edits for author Chaheel Riens
+Get 1 past events for Chaheel Riens
+Choice displayed to reviewer on whether to warn Chaheel Riens
+Warning message sent to Chaheel Riens
+Suspicious event of type warning logged for Chaheel Riens at 2020-07-15T09:22:15Z
+Title: Donald Trump Author: Chaheel Riens
+Avg ORES Damaging score is: 0.01
+Difference from baseline score is: 0.01
+Starting time of window is: 2020-07-14T14:11:55Z
+Ending time of window is: 2020-07-15T09:22:15Z
+
+Executed test for revision ID: 967788714
+Loaded metadata for revision ID: 967788714
+Retrieved past 10 edits for author Chaheel Riens
+Get 2 past events for Chaheel Riens
+Choice displayed to reviewer on whether to warn Chaheel Riens
+Warning message sent to Chaheel Riens
+Suspicious event of type warning logged for Chaheel Riens at 2020-07-15T09:22:15Z
+Title: Donald Trump Author: Chaheel Riens
+Avg ORES Damaging score is: 0.01
+Difference from baseline score is: 0.01
+Starting time of window is: 2020-07-14T14:11:55Z
+Ending time of window is: 2020-07-15T09:22:15Z
+
+Executed test for revision ID: 967788714
+Loaded metadata for revision ID: 967788714
+Retrieved past 10 edits for author Chaheel Riens
+Get 3 past events for Chaheel Riens
+Choice displayed to reviewer on whether to warn Chaheel Riens
+Warning message sent to Chaheel Riens
+Suspicious event of type warning logged for Chaheel Riens at 2020-07-15T09:22:15Z
+Title: Donald Trump Author: Chaheel Riens
+Avg ORES Damaging score is: 0.01
+Difference from baseline score is: 0.01
+Starting time of window is: 2020-07-14T14:11:55Z
+Ending time of window is: 2020-07-15T09:22:15Z
+
+Executed test for revision ID: 967788714
+Loaded metadata for revision ID: 967788714
+Retrieved past 10 edits for author Chaheel Riens
+Get 4 past events for Chaheel Riens
+Choice displayed to reviewer on whether to block Chaheel Riens
+Block message sent to Block_Recipient_Placeholder
+Suspicious event of type block logged for Chaheel Riens at 2020-07-15T09:22:15Z
+Title: Donald Trump Author: Chaheel Riens
+Avg ORES Damaging score is: 0.01
+Difference from baseline score is: 0.01
+Starting time of window is: 2020-07-14T14:11:55Z
+Ending time of window is: 2020-07-15T09:22:15Z
