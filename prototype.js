@@ -1,3 +1,4 @@
+"use strict";
 /**
   Copyright 2019 Google LLC
 
@@ -14,6 +15,7 @@
   limitations under the License.
 **/
 const fetch = require('node-fetch');
+
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -50,293 +52,8 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
-var CESP_Test = /** @class */ (function () {
-    function CESP_Test(info) {
-        this.url = info.url;
-        this.window_size = info.window_size;
-        this.baseline = info.baseline;
-        this.percentage = info.percentage;
-        this.margin = info.margin;
-        this.warning_timeframe = info.warning_timeframe; //Timeframe to get previous warnings to determine blocks, in days
-        this.warning_threshold = info.warning_threshold;
-        this.revID_list = info.revID_list;
-        this.db = {};
-    }
-    CESP_Test.prototype.sleep = function (milliseconds) {
-        return __awaiter(this, void 0, void 0, function () {
-            return __generator(this, function (_a) {
-                return [2 /*return*/, new Promise(function (resolve) { return setTimeout(resolve, milliseconds); })];
-            });
-        });
-    };
-    CESP_Test.prototype.resetDecisionLog = function () {
-        return __awaiter(this, void 0, void 0, function () {
-            return __generator(this, function (_a) {
-                //Simulating a real database in demo 
-                this.db = {};
-                return [2 /*return*/];
-            });
-        });
-    };
-    /*
-      Queries the MediaWiki API to get the article title and author ID from revision ID.
-    */
-    CESP_Test.prototype.getUserAndTitle = function (revID) {
-        return __awaiter(this, void 0, void 0, function () {
-            var this_url, params, response, response_json, pages_object, v, page_object, title, author, timestamp, results;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0:
-                        this_url = this.url;
-                        params = {
-                            action: "query",
-                            format: "json",
-                            prop: "info|revisions",
-                            revids: revID
-                        };
-                        Object.keys(params).forEach(function (key) { this_url += "&" + key + "=" + params[key]; });
-                        return [4 /*yield*/, fetch(this_url, { headers: { "User-Agent": "WikiLoop DoubleCheck Team" } })];
-                    case 1:
-                        response = _a.sent();
-                        return [4 /*yield*/, response.json()];
-                    case 2:
-                        response_json = _a.sent();
-                        pages_object = response_json.query.pages;
-                        for (v in pages_object) {
-                            page_object = pages_object[v];
-                        }
-                        title = page_object.title;
-                        author = page_object.revisions[0].user;
-                        timestamp = page_object.revisions[0].timestamp;
-                        results = {
-                            title: title,
-                            author: author,
-                            timestamp: timestamp
-                        };
-                        console.log("Loaded metadata for revision ID: " + revID);
-                        return [2 /*return*/, results];
-                }
-            });
-        });
-    };
-    CESP_Test.prototype.findEditHistoryAuthor = function (edit_params_promise) {
-        return __awaiter(this, void 0, void 0, function () {
-            var edit_params, title, author, timestamp, this_url, params, response, response_json, edits_by_article, edits_list, page, results;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0: return [4 /*yield*/, edit_params_promise];
-                    case 1:
-                        edit_params = _a.sent();
-                        title = edit_params.title;
-                        author = edit_params.author;
-                        timestamp = edit_params.timestamp;
-                        this_url = this.url;
-                        params = {
-                            action: "query",
-                            format: "json",
-                            list: "allrevisions",
-                            arvuser: author,
-                            arvstart: timestamp,
-                            arvlimit: this.window_size,
-                            arvprop: "oresscores|timestamp"
-                        };
-                        Object.keys(params).forEach(function (key) { this_url += "&" + key + "=" + params[key]; });
-                        return [4 /*yield*/, fetch(this_url, { headers: { "User-Agent": "WikiLoop DoubleCheck Team" } })];
-                    case 2:
-                        response = _a.sent();
-                        return [4 /*yield*/, response.json()];
-                    case 3:
-                        response_json = _a.sent();
-                        edits_by_article = response_json.query.allrevisions;
-                        edits_list = [];
-                        for (page in edits_by_article) {
-                            edits_list.push(edits_by_article[page].revisions[0]);
-                        }
-                        results = {
-                            title: title,
-                            author: author,
-                            edits_list: edits_list
-                        };
-                        console.log("Retrieved past " + edits_list.length + " edits for author " + author);
-                        return [2 /*return*/, results];
-                }
-            });
-        });
-    };
-    CESP_Test.prototype.displayWarningChoice = function (userID) {
-        //Returns whether the reviewer agrees on issuing a warning
-        console.log("Choice displayed to reviewer on whether to warn " + userID);
-        return true;
-    };
-    CESP_Test.prototype.displayBlockChoice = function (userID) {
-        //Returns whether the reviewer agrees on issuing a block
-        console.log("Choice displayed to reviewer on whether to block " + userID);
-        return true;
-    };
-    CESP_Test.prototype.sendWarningMessage = function (recipient) {
-        return __awaiter(this, void 0, void 0, function () {
-            return __generator(this, function (_a) {
-                console.log("Warning message sent to " + recipient);
-                return [2 /*return*/];
-            });
-        });
-    };
-    CESP_Test.prototype.sendBlockMessage = function (recipient) {
-        return __awaiter(this, void 0, void 0, function () {
-            return __generator(this, function (_a) {
-                console.log("Block message sent to " + recipient);
-                return [2 /*return*/];
-            });
-        });
-    };
-    CESP_Test.prototype.getRecipientForBlock = function () {
-        return __awaiter(this, void 0, void 0, function () {
-            return __generator(this, function (_a) {
-                return [2 /*return*/, "Block_Recipient_Placeholder"];
-            });
-        });
-    };
-    CESP_Test.prototype.getPreviousWarnings = function (user_id, end_timestamp) {
-        if (!(user_id in this.db)) {
-            return [];
-        }
-        else {
-            var events_by_user = this.db[user_id];
-            // Within body of anonymous function, the keyword "this" cannot reference the outside
-            // class. Hence using this.warning_timeframe directly inside anonymous function 
-            // will be undefined. 
-            var warning_timeframe = this.warning_timeframe;
-            var events_before_end = events_by_user.filter(function (edit) {
-                var warning_period_start = new Date(end_timestamp);
-                warning_period_start.setDate(warning_period_start.getDate() - warning_timeframe);
-                var warning_period_end = new Date(end_timestamp);
-                var this_edit_time = new Date(edit.timestamp);
-                // Reason to use <= and >=: enable easier testing of Decision Log and Messaging service
-                return (this_edit_time >= warning_period_start && this_edit_time <= warning_period_end);
-            });
-            console.log("Get " + events_before_end.length + " past events for " + user_id);
-            return events_before_end;
-        }
-    };
-    CESP_Test.prototype.writeNewDecision = function (user_id, title, type, timestamp, recipient_id, start_window, avg_score) {
-        var decision_object = {
-            user_id: user_id,
-            title: title,
-            timestamp: timestamp,
-            recipient_id: recipient_id,
-            start_window: start_window,
-            avg_score: avg_score
-        };
-        if (!(user_id in this.db)) {
-            this.db[user_id] = [decision_object];
-        }
-        else {
-            this.db[user_id].push(decision_object);
-        }
-        console.log("Suspicious event of type " + type + " logged for " + user_id + " at " + timestamp);
-    };
-    CESP_Test.prototype.getScoreAndProcess = function (props_and_edits_list_promise) {
-        return __awaiter(this, void 0, void 0, function () {
-            var props_and_edits_list, title, author, edits_list, scores, i, missing_score_string, window_start, window_end, avg, diff, warnings, decision, type, recipient, result_string;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0: return [4 /*yield*/, props_and_edits_list_promise];
-                    case 1:
-                        props_and_edits_list = _a.sent();
-                        title = props_and_edits_list.title;
-                        author = props_and_edits_list.author;
-                        edits_list = props_and_edits_list.edits_list;
-                        scores = new Array(Math.max(this.window_size, edits_list.length));
-                        for (i = 0; i < scores.length; i++) {
-                            //Only take ORES_DAMAGING score 
-                            //If ORES Scores are missing, skip this edit entirely. 
-                            if (edits_list[i].oresscores.damaging == undefined) {
-                                missing_score_string = "";
-                                missing_score_string += "Title: " + title + " Author: " + author + "\n";
-                                missing_score_string += "ORES Scores are missing. Hence no detection is performed. \n";
-                                missing_score_string += "Timestamp: " + edits_list[0].timestamp + "\n";
-                                console.log(missing_score_string);
-                                return [2 /*return*/];
-                            }
-                            scores[i] = edits_list[i].oresscores.damaging["true"];
-                        }
-                        window_start = edits_list[this.window_size - 1].timestamp;
-                        window_end = edits_list[0].timestamp;
-                        avg = scores.reduce(function (acc, e) { return acc + e; }, 0) / scores.length;
-                        diff = avg - this.baseline;
-                        if (!(diff > this.margin)) return [3 /*break*/, 6];
-                        warnings = this.getPreviousWarnings(author, window_end);
-                        if (!(warnings.length > this.warning_threshold)) return [3 /*break*/, 4];
-                        type = "block";
-                        decision = this.displayBlockChoice(author);
-                        if (!decision) return [3 /*break*/, 3];
-                        return [4 /*yield*/, this.getRecipientForBlock()];
-                    case 2:
-                        recipient = _a.sent();
-                        this.sendBlockMessage(recipient);
-                        _a.label = 3;
-                    case 3: return [3 /*break*/, 5];
-                    case 4:
-                        type = "warning";
-                        decision = this.displayWarningChoice(author);
-                        if (decision) {
-                            recipient = author;
-                            this.sendWarningMessage(recipient);
-                        }
-                        _a.label = 5;
-                    case 5:
-                        this.writeNewDecision(author, title, type, window_end, recipient, window_start, avg);
-                        return [3 /*break*/, 7];
-                    case 6:
-                        console.log("Author " + author + "is not engaged in suspicious behavior.");
-                        _a.label = 7;
-                    case 7:
-                        result_string = "";
-                        result_string += "Title: " + title + " Author: " + author + "\n";
-                        result_string += "Avg ORES Damaging score is: " + avg.toFixed(2) + "\n";
-                        result_string += "Difference from baseline score is: " + diff.toFixed(2) + "\n";
-                        result_string += "Starting time of window is: " + window_start + "\n";
-                        result_string += "Ending time of window is: " + window_end + "\n";
-                        console.log(result_string);
-                        return [2 /*return*/];
-                }
-            });
-        });
-    };
-    CESP_Test.prototype.run_test = function (revID) {
-        var sample_edit_params = this.getUserAndTitle(revID);
-        var params_and_history = this.findEditHistoryAuthor(sample_edit_params);
-        this.getScoreAndProcess(params_and_history);
-        console.log("Executed test for revision ID: " + revID);
-    };
-    CESP_Test.prototype.run_all = function () {
-        return __awaiter(this, void 0, void 0, function () {
-            var i;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0:
-                        this.resetDecisionLog();
-                        i = 0;
-                        _a.label = 1;
-                    case 1:
-                        if (!(i < this.revID_list.length)) return [3 /*break*/, 5];
-                        return [4 /*yield*/, this.run_test(this.revID_list[i])];
-                    case 2:
-                        _a.sent();
-                        return [4 /*yield*/, this.sleep(1000)];
-                    case 3:
-                        _a.sent();
-                        _a.label = 4;
-                    case 4:
-                        i++;
-                        return [3 /*break*/, 1];
-                    case 5: return [2 /*return*/];
-                }
-            });
-        });
-    };
-    return CESP_Test;
-}());
+exports.__esModule = true;
+var CESP_Test_1 = require("./CESP_Test");
 function main() {
     return __awaiter(this, void 0, void 0, function () {
         var test_case_one_info, test_case_one, test_case_two_info, test_case_two;
@@ -353,7 +70,7 @@ function main() {
                         warning_threshold: 3,
                         revID_list: [967788714, 845591562, 820220399, 797070597, 784455460, 761250919, 760592760, 760592487, 738223561, 694525673]
                     };
-                    test_case_one = new CESP_Test(test_case_one_info);
+                    test_case_one = new CESP_Test_1.CESP_Test(test_case_one_info);
                     return [4 /*yield*/, test_case_one.run_all()];
                 case 1:
                     _a.sent();
@@ -367,7 +84,7 @@ function main() {
                         warning_threshold: 3,
                         revID_list: [967788714, 967788714, 967788714, 967788714, 967788714]
                     };
-                    test_case_two = new CESP_Test(test_case_two_info);
+                    test_case_two = new CESP_Test_1.CESP_Test(test_case_two_info);
                     return [4 /*yield*/, test_case_two.run_all()];
                 case 2:
                     _a.sent();
