@@ -75,7 +75,7 @@ class CESP_Test implements Revision_Test {
 	 		revids: revID,
 	    }
 	    Object.keys(params).forEach(function(key){this_url += "&" + key + "=" + params[key];});
-	    var response = await fetch(this_url);
+	    var response = await fetch(this_url, {headers: {"User-Agent": "WikiLoop DoubleCheck Team"}});
 	    var response_json = await response.json();
 	    
 	    var pages_object = response_json.query.pages;
@@ -113,7 +113,7 @@ class CESP_Test implements Revision_Test {
 	        arvprop: "oresscores|timestamp",
 	    }
 	    Object.keys(params).forEach(function(key){this_url += "&" + key + "=" + params[key];});
-	    var response = await fetch(this_url);
+	    var response = await fetch(this_url, {headers: {"User-Agent": "WikiLoop DoubleCheck Team"}});
 	    var response_json = await response.json();
 
 	    var edits_by_article = response_json.query.allrevisions;
@@ -269,7 +269,7 @@ class CESP_Test implements Revision_Test {
 	    //for(var i = 0; i < sample_revID_list.length; i++){
 	    for(var i = 0; i < this.revID_list.length; i++){
 	    	await this.run_test(this.revID_list[i]);
-	    	await this.sleep(3000);
+	    	await this.sleep(1000);
 	    }
 	}
 }
@@ -302,7 +302,7 @@ async function main() {
 		revID_list: [967788714, 967788714, 967788714, 967788714, 967788714], //Last reptition should trigger block
 	}
 	var test_case_two: CESP_Test = new CESP_Test(test_case_two_info);
-	//await test_case_two.run_all();
+	await test_case_two.run_all();
 
 }
 

@@ -14,7 +14,6 @@
   limitations under the License.
 **/
 const fetch = require('node-fetch');
-
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -96,7 +95,7 @@ var CESP_Test = /** @class */ (function () {
                             revids: revID
                         };
                         Object.keys(params).forEach(function (key) { this_url += "&" + key + "=" + params[key]; });
-                        return [4 /*yield*/, fetch(this_url)];
+                        return [4 /*yield*/, fetch(this_url, { headers: { "User-Agent": "WikiLoop DoubleCheck Team" } })];
                     case 1:
                         response = _a.sent();
                         return [4 /*yield*/, response.json()];
@@ -142,7 +141,7 @@ var CESP_Test = /** @class */ (function () {
                             arvprop: "oresscores|timestamp"
                         };
                         Object.keys(params).forEach(function (key) { this_url += "&" + key + "=" + params[key]; });
-                        return [4 /*yield*/, fetch(this_url)];
+                        return [4 /*yield*/, fetch(this_url, { headers: { "User-Agent": "WikiLoop DoubleCheck Team" } })];
                     case 2:
                         response = _a.sent();
                         return [4 /*yield*/, response.json()];
@@ -324,7 +323,7 @@ var CESP_Test = /** @class */ (function () {
                         return [4 /*yield*/, this.run_test(this.revID_list[i])];
                     case 2:
                         _a.sent();
-                        return [4 /*yield*/, this.sleep(3000)];
+                        return [4 /*yield*/, this.sleep(1000)];
                     case 3:
                         _a.sent();
                         _a.label = 4;
@@ -369,6 +368,9 @@ function main() {
                         revID_list: [967788714, 967788714, 967788714, 967788714, 967788714]
                     };
                     test_case_two = new CESP_Test(test_case_two_info);
+                    return [4 /*yield*/, test_case_two.run_all()];
+                case 2:
+                    _a.sent();
                     return [2 /*return*/];
             }
         });
