@@ -14,239 +14,280 @@
   limitations under the License.
 **/
 
-const url = "https://en.wikipedia.org/w/api.php?origin=*";
-const window_size:number = 10;
-const baseline = 0.3;
-const percentage = 0.5
-const margin = baseline * percentage;
-const warning_timeframe = 3; //Timeframe to get previous warnings to determine blocks, in days
-const warning_threshold = 3;
-
-//This testing set of revisions are all made by Chaheel Riens on page Donald Trump
-var sample_revID_list = [967788714, 845591562, 820220399, 797070597, 784455460, 761250919, 760592760, 760592487, 738223561, 694525673];
-var db;
-
-async function sleep() {
-  return new Promise(resolve => setTimeout(resolve, 3000));
+interface Revision_Test {
+	run_all();
+	run_test(id:number);
 }
 
-async function setUpDecisionLog() {
-    //Simulating a real database in demo 
-    db = {};
+interface CESP_Test_Info {
+	url:string;
+    window_size:number;
+	baseline:number;
+	percentage:number;
+	margin:number;
+	warning_timeframe:number; //Timeframe to get previous warnings to determine blocks, in days
+	warning_threshold:number;
+	revID_list:Array<number>;
 }
 
+class CESP_Test implements Revision_Test {
 
-/*
-  Queries the MediaWiki API to get the article title and author ID from revision ID.
-*/
+	url:string;
+    window_size:number;
+	baseline:number;
+	percentage:number;
+	margin:number;
+	warning_timeframe:number; //Timeframe to get previous warnings to determine blocks, in days
+	warning_threshold:number;
+	revID_list:Array<number>;
+	db;
 
-async function getUserAndTitle(revID){
-    var this_url = url;
-    var params = {
-        action: "query",
-        format: "json",
-        prop: "info|revisions",
- 		revids: revID,
-    }
-    Object.keys(params).forEach(function(key){this_url += "&" + key + "=" + params[key];});
-    var response = await fetch(this_url);
-    var response_json = await response.json();
-    
-    var pages_object = response_json.query.pages;
-
-    for (var v in pages_object) {
-    	var page_object = pages_object[v];
-    }
-
-    var title = page_object.title;
-    var author = page_object.revisions[0].user;
-    var timestamp = page_object.revisions[0].timestamp;
-    var results = {
-    	title: title,
-    	author: author,
-    	timestamp: timestamp,
-    }
-    return results;
-}
-
-
-async function findEditHistoryAuthor(edit_params_promise){
-	var edit_params = await edit_params_promise;
-    var title = edit_params.title;
-    var author = edit_params.author;
-    var timestamp = edit_params.timestamp;
-    //console.log("Title is: " + title);
-    //console.log("Author is: " + author);
-    //console.log("Timestamp is: " + timestamp);
-
-    var this_url = url;
-    var params = {
-        action: "query",
-        format: "json",
-        list: "allrevisions",
-        arvuser: author,
-        arvstart: timestamp,
-        arvlimit: window_size,
-        arvprop: "oresscores|timestamp",
-    }
-    Object.keys(params).forEach(function(key){this_url += "&" + key + "=" + params[key];});
-    //console.log(this_url);
-    var response = await fetch(this_url);
-    //console.log(response);
-    var response_json = await response.json();
-    //console.log("Now Displaying the JSON response")
-    //console.log(response_json);
-    var edits_by_article = response_json.query.allrevisions;
-    //console.log("Now displaying the edits")
-    //console.log(edits_by_article);
-    var edits_list = [];
-    for (var page in edits_by_article) {
-        edits_list.push(edits_by_article[page].revisions[0]);
-    }
-    //console.log("Now displaying the extracted edit list");
-    //console.log(edits_list);
- 
-    var results = {
-        title: title,
-        author: author,
-        edits_list: edits_list,
-    }
-    return results;
-}
-
-async function displayWarningChoice() {
-    //Returns whether the reviewer agrees on issuing a warning
-    return true;
-}
-
-async function displayBlockChoice() {
-    //Returns whether the reviewer agrees on issuing a block
-    return true;
-}
-
-async function sendWarningMessage(recipient){
-    return;
-}
-
-async function sendBlockMessage(recipient){
-    return;
-}
-
-async function getRecipientForBlock(){
-    return ""
-}
-
-function getPreviousWarnings(user_id, end_timestamp) {
-    
-    if(!(user_id in db)) {
-    	return [];
-    }else{
-    	var edits_by_user = db[user_id];
-    	var edits_before_end = edits_by_user.filter(function(edit){
-    		var warning_period_start = new Date(end_timestamp);
-    		warning_period_start.setDate(warning_period_start.getDate() - warning_timeframe);
-    		var warning_period_end = new Date(end_timestamp);
-    		var this_edit_time = new Date(edit.timestamp);
-    		return (this_edit_time > warning_period_start && this_edit_time < warning_period_end); 
-    	});
-    	return edits_before_end;
-    }
-}
-
-function writeNewDecision(user_id, title, type, timestamp, recipient_id, start_window, avg_score) {
-	var decision_object = {
-		user_id: user_id,
-		title: title,
-		timestamp: timestamp,
-		recipient_id: recipient_id,
-		start_window: start_window,
-		avg_score: avg_score,
+	constructor (info: CESP_Test_Info) {
+		this.url = info.url;
+    	this.window_size = info.window_size;
+		this.baseline = info.baseline;
+		this.percentage = info.percentage;
+		this.margin = info.margin;
+		this.warning_timeframe = info.warning_timeframe; //Timeframe to get previous warnings to determine blocks, in days
+		this.warning_threshold = info.warning_threshold;
+		this.revID_list = info.revID_list;	
+		this.db = {};
 	}
-    if(!(user_id in db)) {
-    	db[user_id] = [decision_object];
-    }else {
-    	db[user_id].push(decision_object);
-    }
-}
 
-async function getScoreAndProcess(props_and_edits_list_promise){
-    var props_and_edits_list = await props_and_edits_list_promise;
-    var title = props_and_edits_list.title;
-    var author = props_and_edits_list.author;
-    var edits_list = props_and_edits_list.edits_list;
-    //console.log("Retrieved Edits List is: ");
-    //console.log(edits_list);
+	async sleep(milliseconds) {
+  		return new Promise(resolve => setTimeout(resolve, milliseconds));
+	}
 
-    var scores = new Array(Math.max(window_size, edits_list.length));
-    for (var i = 0; i < scores.length; i++) {
-        //Only take ORES_DAMAGING score 
-        //If ORES Scores are missing, skip this edit entirely. 
-        if(edits_list[i].oresscores.damaging == undefined) {
-        	var missing_score_string = "";
-        	missing_score_string += "Title: " + title + " Author: " + author + "\n";
-        	missing_score_string += "ORES Scores are missing. Hence no detection is performed. \n";
-        	missing_score_string += "Timestamp: " + edits_list[0].timestamp + "\n";
-        	console.log(missing_score_string);
-        	return;
-        }
-        scores[i] = edits_list[i].oresscores.damaging.true;
-    }
+	public async resetDecisionLog() {
+    	//Simulating a real database in demo 
+    	this.db = {};
+	}
 
-    var window_start = edits_list[window_size-1].timestamp;
-    var window_end = edits_list[0].timestamp;
-    var avg = scores.reduce((acc, e) => acc + e, 0) / scores.length;
-    var diff = avg - baseline;
-    
-    if(diff > margin) {
-        var warnings = getPreviousWarnings(author, window_end);
-        var decision;
-        var type;
-        var recipient;
-        if (warnings.length > warning_threshold) {
-            type = "block";
-            decision = displayBlockChoice();
-            if (decision) {
-                recipient = await getRecipientForBlock();
-                sendBlockMessage(recipient);
-            }
-        }else{
-            type = "warning";
-            decision = displayWarningChoice();
-            if (decision) {
-                recipient = author;
-                sendWarningMessage(recipient);
-            }
-        }
-        writeNewDecision(author, title, type, window_end, recipient, window_start, avg);
-    }else{
-        console.log("Author " + author + "is not engaged in suspicious behavior.");
-    }
+	/*
+	  Queries the MediaWiki API to get the article title and author ID from revision ID.
+	*/
+	async getUserAndTitle(revID){
+	    var this_url = this.url;
+	    var params = {
+	        action: "query",
+	        format: "json",
+	        prop: "info|revisions",
+	 		revids: revID,
+	    }
+	    Object.keys(params).forEach(function(key){this_url += "&" + key + "=" + params[key];});
+	    var response = await fetch(this_url);
+	    var response_json = await response.json();
+	    
+	    var pages_object = response_json.query.pages;
 
-    //Display on prototype.html
-    var result_string = "";
-    result_string += "Title: " + title + " Author: " + author + "\n";
-    result_string += "Avg ORES Damaging score is: " + avg.toFixed(2) + "\n";
-    result_string += "Difference from baseline score is: " + diff.toFixed(2) + "\n";
-    result_string += "Starting time of window is: " + window_start +"\n"; 
-    result_string += "Ending time of window is: " + window_end + "\n";
-    console.log(result_string);
-    //document.body.textContent = result_string;
-}
+	    for (var v in pages_object) {
+	    	var page_object = pages_object[v];
+	    }
 
-async function run_revision(revID) {
-    var sample_edit_params = getUserAndTitle(revID);
-    var params_and_history = findEditHistoryAuthor(sample_edit_params);
-    getScoreAndProcess(params_and_history);
-    console.log("Executed test for revision ID: " + revID);
+	    var title = page_object.title;
+	    var author = page_object.revisions[0].user;
+	    var timestamp = page_object.revisions[0].timestamp;
+	    var results = {
+	    	title: title,
+	    	author: author,
+	    	timestamp: timestamp,
+	    }
+	    console.log("Loaded metadata for revision ID: " + revID);
+	    return results;
+	}
+
+	async findEditHistoryAuthor(edit_params_promise){
+		var edit_params = await edit_params_promise;
+	    var title = edit_params.title;
+	    var author = edit_params.author;
+	    var timestamp = edit_params.timestamp;
+
+	    var this_url = this.url;
+	    var params = {
+	        action: "query",
+	        format: "json",
+	        list: "allrevisions",
+	        arvuser: author,
+	        arvstart: timestamp,
+	        arvlimit: this.window_size,
+	        arvprop: "oresscores|timestamp",
+	    }
+	    Object.keys(params).forEach(function(key){this_url += "&" + key + "=" + params[key];});
+	    //console.log(this_url);
+	    var response = await fetch(this_url);
+	    //console.log(response);
+	    var response_json = await response.json();
+	    //console.log("Now Displaying the JSON response")
+	    //console.log(response_json);
+	    var edits_by_article = response_json.query.allrevisions;
+	    //console.log("Now displaying the edits")
+	    //console.log(edits_by_article);
+	    var edits_list = [];
+	    for (var page in edits_by_article) {
+	        edits_list.push(edits_by_article[page].revisions[0]);
+	    }
+	    //console.log("Now displaying the extracted edit list");
+	    //console.log(edits_list);
+	    var results = {
+	        title: title,
+	        author: author,
+	        edits_list: edits_list,
+	    }
+	    console.log("Retrieved past " + edits_list.length + " edits for author " + author);
+	    return results;
+	}
+
+	displayWarningChoice(userID) {
+	    //Returns whether the reviewer agrees on issuing a warning
+	    console.log("Choice displayed to reviewer on whether to warn " + userID);
+	    return true;
+	}
+
+	displayBlockChoice(userID) {
+    	//Returns whether the reviewer agrees on issuing a block
+    	console.log("Choice displayed to reviewer on whether to block " + userID);
+    	return true;
+	}
+
+	async sendWarningMessage(recipient){
+		console.log("Warning message sent to " + recipient + "\n");
+    	return;
+	}
+
+	async sendBlockMessage(recipient){
+		console.log("Block message sent to " + recipient + "\n");
+    	return;
+	}
+
+	async getRecipientForBlock(){
+    	return "Block_Recipient_Placeholder";
+	}
+
+	getPreviousWarnings(user_id, end_timestamp) {
+	    if(!(user_id in this.db)) {
+	    	return [];
+	    }else{
+	    	var events_by_user = this.db[user_id];
+	    	var events_before_end = events_by_user.filter(function(edit){
+	    		var warning_period_start = new Date(end_timestamp);
+	    		warning_period_start.setDate(warning_period_start.getDate() - this.warning_timeframe);
+	    		var warning_period_end = new Date(end_timestamp);
+	    		var this_edit_time = new Date(edit.timestamp);
+	    		return (this_edit_time > warning_period_start && this_edit_time < warning_period_end); 
+	    	});
+	    	console.log("Get " + events_before_end.length + " past events for " + user_id + "\n");
+	    	return events_before_end;
+	    }
+	}
+
+	writeNewDecision(user_id, title, type, timestamp, recipient_id, start_window, avg_score) {
+		var decision_object = {
+			user_id: user_id,
+			title: title,
+			timestamp: timestamp,
+			recipient_id: recipient_id,
+			start_window: start_window,
+			avg_score: avg_score,
+		}
+	    if(!(user_id in this.db)) {
+	    	this.db[user_id] = [decision_object];
+	    }else {
+	    	this.db[user_id].push(decision_object);
+	    }
+	    console.log("Suspicious event of type " + type + " logged for " + user_id + " at " + timestamp + "\n");
+	}
+
+	async getScoreAndProcess(props_and_edits_list_promise){
+	    var props_and_edits_list = await props_and_edits_list_promise;
+	    var title = props_and_edits_list.title;
+	    var author = props_and_edits_list.author;
+	    var edits_list = props_and_edits_list.edits_list;
+
+	    var scores = new Array(Math.max(this.window_size, edits_list.length));
+	    for (var i = 0; i < scores.length; i++) {
+	        //Only take ORES_DAMAGING score 
+	        //If ORES Scores are missing, skip this edit entirely. 
+	        if(edits_list[i].oresscores.damaging == undefined) {
+	        	var missing_score_string = "";
+	        	missing_score_string += "Title: " + title + " Author: " + author + "\n";
+	        	missing_score_string += "ORES Scores are missing. Hence no detection is performed. \n";
+	        	missing_score_string += "Timestamp: " + edits_list[0].timestamp + "\n";
+	        	console.log(missing_score_string);
+	        	return;
+	        }
+	        scores[i] = edits_list[i].oresscores.damaging.true;
+	    }
+
+	    var window_start = edits_list[this.window_size-1].timestamp;
+	    var window_end = edits_list[0].timestamp;
+	    var avg = scores.reduce((acc, e) => acc + e, 0) / scores.length;
+	    var diff = avg - this.baseline;
+	    
+	    if(diff > this.margin) {
+	        var warnings = this.getPreviousWarnings(author, window_end);
+	        var decision;
+	        var type;
+	        var recipient;
+	        if (warnings.length > this.warning_threshold) {
+	            type = "block";
+	            decision = this.displayBlockChoice(author);
+	            if (decision) {
+	                recipient = await this.getRecipientForBlock();
+	                this.sendBlockMessage(recipient);
+	            }
+	        }else{
+	            type = "warning";
+	            decision = this.displayWarningChoice(author);
+	            if (decision) {
+	                recipient = author;
+	                this.sendWarningMessage(recipient);
+	            }
+	        }
+	        this.writeNewDecision(author, title, type, window_end, recipient, window_start, avg);
+	    }else{
+	        console.log("Author " + author + "is not engaged in suspicious behavior.");
+	    }
+
+	    //Display on prototype.html
+	    var result_string = "";
+	    result_string += "Title: " + title + " Author: " + author + "\n";
+	    result_string += "Avg ORES Damaging score is: " + avg.toFixed(2) + "\n";
+	    result_string += "Difference from baseline score is: " + diff.toFixed(2) + "\n";
+	    result_string += "Starting time of window is: " + window_start +"\n"; 
+	    result_string += "Ending time of window is: " + window_end + "\n";
+	    console.log(result_string);
+	}
+
+	public run_test(revID) {
+		var sample_edit_params = this.getUserAndTitle(revID);
+    	var params_and_history = this.findEditHistoryAuthor(sample_edit_params);
+    	this.getScoreAndProcess(params_and_history);
+    	console.log("Executed test for revision ID: " + revID);
+	}
+
+	public async run_all(){
+		this.resetDecisionLog();
+	    //for(var i = 0; i < sample_revID_list.length; i++){
+	    for(var i = 0; i < this.revID_list.length; i++){
+	    	await this.run_test(this.revID_list[i]);
+	    	await this.sleep(3000);
+	    }
+	}
 }
 
 async function main() {
-    setUpDecisionLog();
-    //for(var i = 0; i < sample_revID_list.length; i++){
-    for(var i = 0; i < sample_revID_list.length; i++){
-    	await run_revision(sample_revID_list[i]);
-    	await sleep();
-    }
+	var test_case_one_info: CESP_Test_Info = {
+		url: "https://en.wikipedia.org/w/api.php?origin=*",
+		window_size: 10,
+		baseline: 0.3,
+		percentage: 0.5,
+		margin: 0.15,
+		warning_timeframe: 3,
+		warning_threshold: 3,
+		revID_list: [967788714, 845591562, 820220399, 797070597, 784455460, 761250919, 760592760, 760592487, 738223561, 694525673],
+	}
+	var test_case_one: CESP_Test = new CESP_Test(test_case_one_info);
+	await test_case_one.run_all();
 }
 
 main();
