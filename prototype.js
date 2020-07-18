@@ -15,7 +15,6 @@
   limitations under the License.
 **/
 const fetch = require('node-fetch');
-
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -56,7 +55,7 @@ exports.__esModule = true;
 var CESP_Test_1 = require("./CESP_Test");
 function main() {
     return __awaiter(this, void 0, void 0, function () {
-        var test_case_one_info, test_case_one, test_case_two_info, test_case_two;
+        var test_case_one_info, test_case_one, test_case_two_info, test_case_two, this_url, params, response, response_json, pages, large_revID_list, page, this_revision_list, i, test_case_large_info, test_case_large;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
@@ -71,9 +70,6 @@ function main() {
                         revID_list: [967788714, 845591562, 820220399, 797070597, 784455460, 761250919, 760592760, 760592487, 738223561, 694525673]
                     };
                     test_case_one = new CESP_Test_1.CESP_Test(test_case_one_info);
-                    return [4 /*yield*/, test_case_one.run_all()];
-                case 1:
-                    _a.sent();
                     test_case_two_info = {
                         url: "https://en.wikipedia.org/w/api.php?origin=*",
                         window_size: 10,
@@ -85,8 +81,44 @@ function main() {
                         revID_list: [967788714, 967788714, 967788714, 967788714, 967788714]
                     };
                     test_case_two = new CESP_Test_1.CESP_Test(test_case_two_info);
-                    return [4 /*yield*/, test_case_two.run_all()];
+                    this_url = "https://en.wikipedia.org/w/api.php?origin=*";
+                    params = {
+                        action: "query",
+                        format: "json",
+                        list: "allrevisions",
+                        arvstart: "2020-07-15T09:22:15Z",
+                        arvlimit: 100,
+                        arvprop: "ids|timestamp"
+                    };
+                    Object.keys(params).forEach(function (key) { this_url += "&" + key + "=" + params[key]; });
+                    return [4 /*yield*/, fetch(this_url, { headers: { "User-Agent": "WikiLoop DoubleCheck Team" } })];
+                case 1:
+                    response = _a.sent();
+                    return [4 /*yield*/, response.json()];
                 case 2:
+                    response_json = _a.sent();
+                    pages = response_json.query.allrevisions;
+                    large_revID_list = [];
+                    for (page in pages) {
+                        this_revision_list = pages[page].revisions;
+                        for (i = 0; i < this_revision_list.length; i++) {
+                            large_revID_list.push(this_revision_list[i].revid);
+                        }
+                    }
+                    console.log("Revision ID list is: " + large_revID_list);
+                    test_case_large_info = {
+                        url: "https://en.wikipedia.org/w/api.php?origin=*",
+                        window_size: 10,
+                        baseline: 0.0,
+                        percentage: 0.0,
+                        margin: 0.0,
+                        warning_timeframe: 3,
+                        warning_threshold: 3,
+                        revID_list: large_revID_list
+                    };
+                    test_case_large = new CESP_Test_1.CESP_Test(test_case_large_info);
+                    return [4 /*yield*/, test_case_large.run_all()];
+                case 3:
                     _a.sent();
                     return [2 /*return*/];
             }
