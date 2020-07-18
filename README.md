@@ -13,7 +13,7 @@ Then, add line <br />
 ```
 const fetch = require('node-fetch');
 ```
-to the beginning of CESP_Test.js <br />
+to the beginning of CESP_Test.js and prototype.js <br />
 Finally, run <br />
 ```
 node prototype.js 
