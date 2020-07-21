@@ -145,6 +145,7 @@ export class CESP_Test implements Revision_Test {
 
 	getPreviousWarnings(user_id, end_timestamp) {
 	    if(!(user_id in this.db)) {
+	    	console.log("User id: " + user_id + " not found in database.");
 	    	return [];
 	    }else{
 	    	var events_by_user = this.db[user_id];
@@ -188,7 +189,7 @@ export class CESP_Test implements Revision_Test {
 	    var author = props_and_edits_list.author;
 	    var edits_list = props_and_edits_list.edits_list;
 
-	    var scores = new Array(Math.max(this.window_size, edits_list.length));
+	    var scores = new Array(Math.min(this.window_size, edits_list.length));
 	    for (var i = 0; i < scores.length; i++) {
 	        //Only take ORES_DAMAGING score 
 	        //If ORES Scores are missing, skip this edit entirely. 
@@ -203,7 +204,7 @@ export class CESP_Test implements Revision_Test {
 	        scores[i] = edits_list[i].oresscores.damaging.true;
 	    }
 
-	    var window_start = edits_list[this.window_size-1].timestamp;
+	    var window_start = edits_list[edits_list.length-1].timestamp;
 	    var window_end = edits_list[0].timestamp;
 	    var avg = scores.reduce((acc, e) => acc + e, 0) / scores.length;
 	    var diff = avg - this.baseline;

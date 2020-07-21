@@ -55,7 +55,7 @@ exports.__esModule = true;
 var CESP_Test_1 = require("./CESP_Test");
 function main() {
     return __awaiter(this, void 0, void 0, function () {
-        var test_case_one_info, test_case_one, test_case_two_info, test_case_two, this_url, params, response, response_json, pages, large_revID_list, page, this_revision_list, i, test_case_large_info, test_case_large;
+        var test_case_one_info, test_case_one, test_case_two_info, test_case_two, this_url, params, response, response_json, pages, large_revID_list, page, this_revision_list, i, test_case_large_info, test_case_large, normal_revID_list, test_case_normal_info, test_case_normal, offending_revID_list, test_case_offending_info, test_case_offending;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
@@ -105,20 +105,49 @@ function main() {
                             large_revID_list.push(this_revision_list[i].revid);
                         }
                     }
-                    console.log("Revision ID list is: " + large_revID_list);
                     test_case_large_info = {
                         url: "https://en.wikipedia.org/w/api.php?origin=*",
                         window_size: 10,
                         baseline: 0.0,
                         percentage: 0.0,
-                        margin: 0.0,
+                        margin: 0.1,
                         warning_timeframe: 3,
                         warning_threshold: 3,
                         revID_list: large_revID_list
                     };
                     test_case_large = new CESP_Test_1.CESP_Test(test_case_large_info);
-                    return [4 /*yield*/, test_case_large.run_all()];
+                    normal_revID_list = [967788714, 967788713, 967788712, 967788660, 967788711, 967788655,
+                        967788710, 967788709, 967788708, 967788707, 967788705, 967788706];
+                    test_case_normal_info = {
+                        url: "https://en.wikipedia.org/w/api.php?origin=*",
+                        window_size: 10,
+                        baseline: 0.0,
+                        percentage: 0.0,
+                        margin: 0.1,
+                        warning_timeframe: 3,
+                        warning_threshold: 3,
+                        revID_list: normal_revID_list
+                    };
+                    test_case_normal = new CESP_Test_1.CESP_Test(test_case_normal_info);
+                    return [4 /*yield*/, test_case_normal.run_all()];
                 case 3:
+                    _a.sent();
+                    offending_revID_list = [968719871, 927235330, 968712369, 968714347, 968713855, 968699772,
+                        968713899, 968713561, 968714228, 968714110, 968705063, 968705137,
+                        968705232, 968705288, 968705348, 968705424];
+                    test_case_offending_info = {
+                        url: "https://en.wikipedia.org/w/api.php?origin=*",
+                        window_size: 10,
+                        baseline: 0.0,
+                        percentage: 0.0,
+                        margin: 0.1,
+                        warning_timeframe: 3,
+                        warning_threshold: 3,
+                        revID_list: offending_revID_list
+                    };
+                    test_case_offending = new CESP_Test_1.CESP_Test(test_case_offending_info);
+                    return [4 /*yield*/, test_case_offending.run_all()];
+                case 4:
                     _a.sent();
                     return [2 /*return*/];
             }

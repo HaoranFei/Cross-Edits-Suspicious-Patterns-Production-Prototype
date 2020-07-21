@@ -59,9 +59,7 @@ async function main() {
 	}
 	Object.keys(params).forEach(function(key){this_url += "&" + key + "=" + params[key];});
 	var response = await fetch(this_url, {headers: {"User-Agent": "WikiLoop DoubleCheck Team"}});
-	//console.log(response);
 	var response_json = await response.json();
-	//console.log(response_json);
 	var pages = response_json.query.allrevisions;
 	var large_revID_list = [];
 	for (var page in pages){
@@ -70,19 +68,58 @@ async function main() {
 			large_revID_list.push(this_revision_list[i].revid);
 		}
 	}
-	console.log("Revision ID list is: " + large_revID_list);
 	var test_case_large_info: CESP_Test_Info = {
 		url: "https://en.wikipedia.org/w/api.php?origin=*",
 		window_size: 10,
 		baseline: 0.0, //All revisions will be flagged!
 		percentage: 0.0,
-		margin: 0.0,
+		margin: 0.1,
 		warning_timeframe: 3,
 		warning_threshold: 3,
 		revID_list: large_revID_list,
 	}
+	//console.log(large_revID_list);
 	var test_case_large: CESP_Test = new CESP_Test(test_case_large_info);
-	await test_case_large.run_all();
+	//await test_case_large.run_all();
+
+	var normal_revID_list = [967788714, 967788713, 967788712, 967788660, 967788711, 967788655,
+  							 967788710, 967788709, 967788708, 967788707, 967788705, 967788706];
+	var test_case_normal_info: CESP_Test_Info = {
+		url: "https://en.wikipedia.org/w/api.php?origin=*",
+		window_size: 10,
+		baseline: 0.0, //All revisions will be flagged!
+		percentage: 0.0,
+		margin: 0.1,
+		warning_timeframe: 3,
+		warning_threshold: 3,
+		revID_list: normal_revID_list,
+	}
+	var test_case_normal: CESP_Test = new CESP_Test(test_case_normal_info);
+	await test_case_normal.run_all();
+
+	// Ported over from wikiloop-analysis
+	// Starting from 968719871 are DEFINITE cases of Vandalism
+	// All authors after 968719871 are soon blocked after their Vandalism
+	// Mostly indefinitely
+	// Starting from 968705063 are revisions from an author who could have
+	// been blocked automatically had this project been in place
+	// Name: Catmina68 Block date: 01:32, 21 July 2020 Reason: Vandalism-only account 
+	// Duration: indefinitely
+	var offending_revID_list = [968719871, 927235330, 968712369, 968714347, 968713855, 968699772,
+								968713899, 968713561, 968714228, 968714110, 968705063, 968705137, 
+								968705232, 968705288, 968705348, 968705424];
+	var test_case_offending_info: CESP_Test_Info = {
+		url: "https://en.wikipedia.org/w/api.php?origin=*",
+		window_size: 10,
+		baseline: 0.0, //All revisions will be flagged!
+		percentage: 0.0,
+		margin: 0.1,
+		warning_timeframe: 3,
+		warning_threshold: 3,
+		revID_list: offending_revID_list,
+	}
+	var test_case_offending: CESP_Test = new CESP_Test(test_case_offending_info);
+	await test_case_offending.run_all();
 
 }
 

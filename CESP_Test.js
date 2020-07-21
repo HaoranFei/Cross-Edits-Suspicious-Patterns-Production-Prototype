@@ -201,6 +201,7 @@ var CESP_Test = /** @class */ (function () {
     };
     CESP_Test.prototype.getPreviousWarnings = function (user_id, end_timestamp) {
         if (!(user_id in this.db)) {
+            console.log("User id: " + user_id + " not found in database.");
             return [];
         }
         else {
@@ -249,7 +250,7 @@ var CESP_Test = /** @class */ (function () {
                         title = props_and_edits_list.title;
                         author = props_and_edits_list.author;
                         edits_list = props_and_edits_list.edits_list;
-                        scores = new Array(Math.max(this.window_size, edits_list.length));
+                        scores = new Array(Math.min(this.window_size, edits_list.length));
                         for (i = 0; i < scores.length; i++) {
                             //Only take ORES_DAMAGING score 
                             //If ORES Scores are missing, skip this edit entirely. 
@@ -263,7 +264,7 @@ var CESP_Test = /** @class */ (function () {
                             }
                             scores[i] = edits_list[i].oresscores.damaging["true"];
                         }
-                        window_start = edits_list[this.window_size - 1].timestamp;
+                        window_start = edits_list[edits_list.length - 1].timestamp;
                         window_end = edits_list[0].timestamp;
                         avg = scores.reduce(function (acc, e) { return acc + e; }, 0) / scores.length;
                         diff = avg - this.baseline;

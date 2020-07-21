@@ -1,0 +1,119 @@
+Executed test for revision ID: 967788714
+Loaded metadata for revision ID: 967788714
+Retrieved past 10 edits for author Chaheel Riens
+Author Chaheel Riensis not engaged in suspicious behavior.
+Title: Donald Trump Author: Chaheel Riens
+Avg ORES Damaging score is: 0.01
+Difference from baseline score is: 0.01
+Starting time of window is: 2020-07-14T14:11:55Z
+Ending time of window is: 2020-07-15T09:22:15Z
+
+Executed test for revision ID: 967788713
+Loaded metadata for revision ID: 967788713
+Retrieved past 5 edits for author Mathglot
+Author Mathglotis not engaged in suspicious behavior.
+Title: Free France Author: Mathglot
+Avg ORES Damaging score is: 0.01
+Difference from baseline score is: 0.01
+Starting time of window is: 2020-07-15T08:06:40Z
+Ending time of window is: 2020-07-15T09:22:14Z
+
+Executed test for revision ID: 967788712
+Loaded metadata for revision ID: 967788712
+Retrieved past 3 edits for author Avocado J
+Author Avocado Jis not engaged in suspicious behavior.
+Title: Agriculture in Sri Lanka Author: Avocado J
+Avg ORES Damaging score is: 0.10
+Difference from baseline score is: 0.10
+Starting time of window is: 2020-07-14T07:35:23Z
+Ending time of window is: 2020-07-15T09:22:14Z
+
+Executed test for revision ID: 967788660
+Loaded metadata for revision ID: 967788660
+Retrieved past 4 edits for author Avocado J
+Author Avocado Jis not engaged in suspicious behavior.
+Title: Agriculture in Sri Lanka Author: Avocado J
+Avg ORES Damaging score is: 0.06
+Difference from baseline score is: 0.06
+Starting time of window is: 2020-07-14T07:16:01Z
+Ending time of window is: 2020-07-15T09:21:41Z
+
+Executed test for revision ID: 967788711
+Loaded metadata for revision ID: 967788711
+Retrieved past 2 edits for author 2409:4065:214:37FF:883D:EBDA:3DB0:C
+User id: 2409:4065:214:37FF:883D:EBDA:3DB0:C not found in database.
+Choice displayed to reviewer on whether to warn 2409:4065:214:37FF:883D:EBDA:3DB0:C
+Warning message sent to 2409:4065:214:37FF:883D:EBDA:3DB0:C
+Suspicious event of type warning logged for 2409:4065:214:37FF:883D:EBDA:3DB0:C at 2020-07-15T09:22:13Z
+Title: Jambavati Author: 2409:4065:214:37FF:883D:EBDA:3DB0:C
+Avg ORES Damaging score is: 0.29
+Difference from baseline score is: 0.29
+Starting time of window is: 2020-07-15T09:20:00Z
+Ending time of window is: 2020-07-15T09:22:13Z
+
+Executed test for revision ID: 967788655
+Loaded metadata for revision ID: 967788655
+Retrieved past 2 edits for author 2409:4065:214:37FF:883D:EBDA:3DB0:C
+Get 0 past events for 2409:4065:214:37FF:883D:EBDA:3DB0:C
+Choice displayed to reviewer on whether to warn 2409:4065:214:37FF:883D:EBDA:3DB0:C
+Warning message sent to 2409:4065:214:37FF:883D:EBDA:3DB0:C
+Suspicious event of type warning logged for 2409:4065:214:37FF:883D:EBDA:3DB0:C at 2020-07-15T09:21:39Z
+Title: Jambavati Author: 2409:4065:214:37FF:883D:EBDA:3DB0:C
+Avg ORES Damaging score is: 0.12
+Difference from baseline score is: 0.12
+Starting time of window is: 2020-07-15T09:20:00Z
+Ending time of window is: 2020-07-15T09:21:39Z
+
+Executed test for revision ID: 967788710
+Loaded metadata for revision ID: 967788710
+Retrieved past 8 edits for author Jacob D
+Author Jacob Dis not engaged in suspicious behavior.
+Title: Israelites Author: Jacob D
+Avg ORES Damaging score is: 0.07
+Difference from baseline score is: 0.07
+Starting time of window is: 2020-06-29T08:14:54Z
+Ending time of window is: 2020-07-15T09:22:11Z
+
+Executed test for revision ID: 967788709
+Loaded metadata for revision ID: 967788709
+Retrieved past 5 edits for author Chickster doll
+Title: Shincheonji Church of Jesus Author: Chickster doll
+ORES Scores are missing. Hence no detection is performed. 
+Timestamp: 2020-07-15T09:22:10Z
+
+Executed test for revision ID: 967788708
+Loaded metadata for revision ID: 967788708
+Retrieved past 8 edits for author PeepleLikeYou
+Author PeepleLikeYouis not engaged in suspicious behavior.
+Title: Byron Paul Brown Author: PeepleLikeYou
+Avg ORES Damaging score is: 0.07
+Difference from baseline score is: 0.07
+Starting time of window is: 2020-07-12T11:52:36Z
+Ending time of window is: 2020-07-15T09:22:10Z
+
+Executed test for revision ID: 967788707
+Loaded metadata for revision ID: 967788707
+Retrieved past 10 edits for author 744cody
+Author 744codyis not engaged in suspicious behavior.
+Title: Template:People of Trinidad and Tobago Author: 744cody
+Avg ORES Damaging score is: 0.01
+Difference from baseline score is: 0.01
+Starting time of window is: 2020-07-15T09:04:38Z
+Ending time of window is: 2020-07-15T09:22:09Z
+
+Executed test for revision ID: 967788705
+Loaded metadata for revision ID: 967788705
+Retrieved past 5 edits for author 188.39.6.90
+Title: Women's suffrage in the United States Author: 188.39.6.90
+ORES Scores are missing. Hence no detection is performed. 
+Timestamp: 2020-07-15T09:22:08Z
+
+Executed test for revision ID: 967788706
+Loaded metadata for revision ID: 967788706
+Retrieved past 4 edits for author Gunkarta
+Author Gunkartais not engaged in suspicious behavior.
+Title: Bakmi Author: Gunkarta
+Avg ORES Damaging score is: 0.07
+Difference from baseline score is: 0.07
+Starting time of window is: 2020-07-13T13:42:59Z
+Ending time of window is: 2020-07-15T09:22:07Z

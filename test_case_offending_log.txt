@@ -1,0 +1,198 @@
+Executed test for revision ID: 968719871
+Loaded metadata for revision ID: 968719871
+Retrieved past 1 edits for author RealMODOT
+User id: RealMODOT not found in database.
+Choice displayed to reviewer on whether to warn RealMODOT
+Warning message sent to RealMODOT
+Suspicious event of type warning logged for RealMODOT at 2020-07-21T02:49:49Z
+Title: Missouri Route 291 Author: RealMODOT
+Avg ORES Damaging score is: 0.61
+Difference from baseline score is: 0.61
+Starting time of window is: 2020-07-21T02:49:49Z
+Ending time of window is: 2020-07-21T02:49:49Z
+
+Executed test for revision ID: 927235330
+Loaded metadata for revision ID: 927235330
+Retrieved past 8 edits for author 58.96.58.126
+Title: Irena Sendler Author: 58.96.58.126
+ORES Scores are missing. Hence no detection is performed. 
+Timestamp: 2019-11-21T04:43:09Z
+
+Executed test for revision ID: 968712369
+Loaded metadata for revision ID: 968712369
+Retrieved past 1 edits for author 2601:283:4100:6E10:BDB8:DCD1:E357:4B23
+User id: 2601:283:4100:6E10:BDB8:DCD1:E357:4B23 not found in database.
+Choice displayed to reviewer on whether to warn 2601:283:4100:6E10:BDB8:DCD1:E357:4B23
+Warning message sent to 2601:283:4100:6E10:BDB8:DCD1:E357:4B23
+Suspicious event of type warning logged for 2601:283:4100:6E10:BDB8:DCD1:E357:4B23 at 2020-07-21T01:37:13Z
+Title: Kimberly Gardner Author: 2601:283:4100:6E10:BDB8:DCD1:E357:4B23
+Avg ORES Damaging score is: 0.85
+Difference from baseline score is: 0.85
+Starting time of window is: 2020-07-21T01:37:13Z
+Ending time of window is: 2020-07-21T01:37:13Z
+
+Executed test for revision ID: 968714347
+Loaded metadata for revision ID: 968714347
+Retrieved past 1 edits for author Nickjames423
+Author Nickjames423is not engaged in suspicious behavior.
+Title: Bluehost Author: Nickjames423
+Avg ORES Damaging score is: 0.08
+Difference from baseline score is: 0.08
+Starting time of window is: 2020-07-21T01:56:14Z
+Ending time of window is: 2020-07-21T01:56:14Z
+
+Executed test for revision ID: 968713855
+Loaded metadata for revision ID: 968713855
+Retrieved past 10 edits for author J for jip
+User id: J for jip not found in database.
+Choice displayed to reviewer on whether to warn J for jip
+Warning message sent to J for jip
+Suspicious event of type warning logged for J for jip at 2020-07-21T01:51:19Z
+Title: BS Author: J for jip
+Avg ORES Damaging score is: 0.32
+Difference from baseline score is: 0.32
+Starting time of window is: 2020-07-21T01:46:15Z
+Ending time of window is: 2020-07-21T01:51:19Z
+
+Executed test for revision ID: 968699772
+Loaded metadata for revision ID: 968699772
+Retrieved past 4 edits for author Johnmulaneyvibes
+User id: Johnmulaneyvibes not found in database.
+Choice displayed to reviewer on whether to warn Johnmulaneyvibes
+Warning message sent to Johnmulaneyvibes
+Suspicious event of type warning logged for Johnmulaneyvibes at 2020-07-20T23:40:25Z
+Title: Thomas Sanders Author: Johnmulaneyvibes
+Avg ORES Damaging score is: 0.75
+Difference from baseline score is: 0.75
+Starting time of window is: 2020-07-20T23:14:10Z
+Ending time of window is: 2020-07-20T23:40:25Z
+
+Executed test for revision ID: 968713899
+Loaded metadata for revision ID: 968713899
+Retrieved past 9 edits for author J for jip
+Get 1 past events for J for jip
+Choice displayed to reviewer on whether to warn J for jip
+Warning message sent to J for jip
+Suspicious event of type warning logged for J for jip at 2020-07-21T01:51:43Z
+Title: CM Author: J for jip
+Avg ORES Damaging score is: 0.30
+Difference from baseline score is: 0.30
+Starting time of window is: 2020-07-21T01:46:37Z
+Ending time of window is: 2020-07-21T01:51:43Z
+
+Executed test for revision ID: 968713561
+Loaded metadata for revision ID: 968713561
+Retrieved past 9 edits for author J for jip
+Get 0 past events for J for jip
+Choice displayed to reviewer on whether to warn J for jip
+Warning message sent to J for jip
+Suspicious event of type warning logged for J for jip at 2020-07-21T01:48:31Z
+Title: SD Author: J for jip
+Avg ORES Damaging score is: 0.33
+Difference from baseline score is: 0.33
+Starting time of window is: 2020-07-21T01:43:51Z
+Ending time of window is: 2020-07-21T01:48:31Z
+
+Executed test for revision ID: 968714228
+Loaded metadata for revision ID: 968714228
+Retrieved past 8 edits for author J for jip
+Get 3 past events for J for jip
+Choice displayed to reviewer on whether to warn J for jip
+Warning message sent to J for jip
+Suspicious event of type warning logged for J for jip at 2020-07-21T01:54:55Z
+Title: VJ Author: J for jip
+Avg ORES Damaging score is: 0.35
+Difference from baseline score is: 0.35
+Starting time of window is: 2020-07-21T01:50:43Z
+Ending time of window is: 2020-07-21T01:54:55Z
+
+Executed test for revision ID: 968714110
+Loaded metadata for revision ID: 968714110
+Retrieved past 8 edits for author J for jip
+Get 3 past events for J for jip
+Choice displayed to reviewer on whether to warn J for jip
+Warning message sent to J for jip
+Suspicious event of type warning logged for J for jip at 2020-07-21T01:53:45Z
+Title: Alicja Janosz Author: J for jip
+Avg ORES Damaging score is: 0.28
+Difference from baseline score is: 0.28
+Starting time of window is: 2020-07-21T01:49:11Z
+Ending time of window is: 2020-07-21T01:53:45Z
+
+Executed test for revision ID: 968705063
+Loaded metadata for revision ID: 968705063
+Retrieved past 1 edits for author Catmina68
+User id: Catmina68 not found in database.
+Choice displayed to reviewer on whether to warn Catmina68
+Warning message sent to Catmina68
+Suspicious event of type warning logged for Catmina68 at 2020-07-21T00:28:17Z
+Title: Courage the Cowardly Dog Author: Catmina68
+Avg ORES Damaging score is: 0.59
+Difference from baseline score is: 0.59
+Starting time of window is: 2020-07-21T00:28:17Z
+Ending time of window is: 2020-07-21T00:28:17Z
+
+Executed test for revision ID: 968705137
+Loaded metadata for revision ID: 968705137
+Retrieved past 1 edits for author Catmina68
+Get 1 past events for Catmina68
+Choice displayed to reviewer on whether to warn Catmina68
+Warning message sent to Catmina68
+Suspicious event of type warning logged for Catmina68 at 2020-07-21T00:29:01Z
+Title: Courage the Cowardly Dog Author: Catmina68
+Avg ORES Damaging score is: 0.92
+Difference from baseline score is: 0.92
+Starting time of window is: 2020-07-21T00:29:01Z
+Ending time of window is: 2020-07-21T00:29:01Z
+
+Executed test for revision ID: 968705232
+Loaded metadata for revision ID: 968705232
+Retrieved past 1 edits for author Catmina68
+Get 2 past events for Catmina68
+Choice displayed to reviewer on whether to warn Catmina68
+Warning message sent to Catmina68
+Suspicious event of type warning logged for Catmina68 at 2020-07-21T00:30:02Z
+Title: Courage the Cowardly Dog Author: Catmina68
+Avg ORES Damaging score is: 0.88
+Difference from baseline score is: 0.88
+Starting time of window is: 2020-07-21T00:30:02Z
+Ending time of window is: 2020-07-21T00:30:02Z
+
+Executed test for revision ID: 968705288
+Loaded metadata for revision ID: 968705288
+Retrieved past 1 edits for author Catmina68
+Get 3 past events for Catmina68
+Choice displayed to reviewer on whether to warn Catmina68
+Warning message sent to Catmina68
+Suspicious event of type warning logged for Catmina68 at 2020-07-21T00:30:41Z
+Title: Courage the Cowardly Dog Author: Catmina68
+Avg ORES Damaging score is: 0.75
+Difference from baseline score is: 0.75
+Starting time of window is: 2020-07-21T00:30:41Z
+Ending time of window is: 2020-07-21T00:30:41Z
+
+Executed test for revision ID: 968705348
+Loaded metadata for revision ID: 968705348
+Retrieved past 1 edits for author Catmina68
+Get 4 past events for Catmina68
+Choice displayed to reviewer on whether to block Catmina68
+Block message sent to Block_Recipient_Placeholder
+Suspicious event of type block logged for Catmina68 at 2020-07-21T00:31:16Z
+Title: Courage the Cowardly Dog Author: Catmina68
+Avg ORES Damaging score is: 0.87
+Difference from baseline score is: 0.87
+Starting time of window is: 2020-07-21T00:31:16Z
+Ending time of window is: 2020-07-21T00:31:16Z
+
+Executed test for revision ID: 968705424
+Loaded metadata for revision ID: 968705424
+Retrieved past 1 edits for author Catmina68
+Get 5 past events for Catmina68
+Choice displayed to reviewer on whether to block Catmina68
+Block message sent to Block_Recipient_Placeholder
+Suspicious event of type block logged for Catmina68 at 2020-07-21T00:32:05Z
+Title: Courage the Cowardly Dog Author: Catmina68
+Avg ORES Damaging score is: 0.93
+Difference from baseline score is: 0.93
+Starting time of window is: 2020-07-21T00:32:05Z
+Ending time of window is: 2020-07-21T00:32:05Z
